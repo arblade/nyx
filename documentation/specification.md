@@ -116,3 +116,30 @@ flow:
       address: $HOME_NET
       port: any
 ```
+
+## Example
+
+```yml
+title: Outdated Firefox on Windows
+description: Detects outdated Firefox browsers (version 3.x except 3.6.13) on Windows.
+id: 9000000
+level: high
+action: alert
+
+protocols:
+  application: http
+
+detection:
+  selection:
+    http.user_agent:
+      - "Mozilla/5.0 (Windows;"
+    http.user_agent:
+      - "Firefox/3."
+  filter:
+    http.user_agent:
+      - "Firefox/3.6.13"
+  condition: selection and not filter
+
+flow:
+  direction: out
+```

@@ -1,5 +1,4 @@
 title: Outdated Firefox on Windows
-ref: [optional]
 description: Detects outdated Firefox browsers (version 3.x except 3.6.13) on Windows.
 id: 9000000
 level: high
@@ -21,9 +20,3 @@ detection:
 
 flow:
   direction: out
-  source:
-    address: $HOME_NET
-    port: any
-  destination:
-    address: $EXTERNAL_NET
-    port: any
