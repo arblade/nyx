@@ -1,0 +1,23 @@
+title: Example tcp.flags sig
+ref: []
+description: Detect specific TCP flags (FPU, CE)
+id: 1
+level: high # Assuming high as default
+action: alert
+
+protocols:
+  ip: tcp
+
+detection:
+  tcp.flags: 
+    - FPU
+    - CE
+
+flow:
+  direction: out
+  source: 
+    address: $EXTERNAL_NET
+    port: any
+  destination:
+    address: $HOME_NET
+    port: any

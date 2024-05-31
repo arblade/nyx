@@ -1,0 +1,28 @@
+title: Do not trust Sql
+ref: 
+    - https://github.com/daffainfo/suricata-rules/blob/main/http/tools/tools.rules
+description: Detect a sqlmap , sorry you have lost
+id: 50000001
+version: 1
+level: high # high will be passed more frequently
+action: alert # or drop, some others custom options
+protocols:
+  ip: tcp
+  application: http
+  # we can dig deeper
+
+detection:
+   ttl: 10
+   sameip: true
+   ipv4.hdr|content: '|06|'
+   ipv4.hdr|offset: 9
+
+meta:
+  direction: out
+  # optional if any, any
+  source: 
+      adress: any
+      port: any
+  destination:
+      adress: any
+      port: any

@@ -1,0 +1,29 @@
+title: GPL DELETED typot trojan traffic
+ref:
+    - https://github.com/daffainfo/suricata-rules
+    rule:
+      - 100406
+description: Detect typot trojan traffic
+id: 2182
+version: 8
+level: high # high will be passed more frequently
+action: alert # or drop, some others custom options
+protocols:
+  ip: tcp
+  application: any # assuming application is any as it's not specified
+
+detection:
+  selection:
+    flow: stateless
+    tcp.flags: S,12
+    tcp.window: 55808
+  condition: selection
+
+flow:
+  direction: out
+  source: 
+      address: $EXTERNAL_NET
+      port: any
+  destination:
+      address: $HOME_NET
+      port: any
