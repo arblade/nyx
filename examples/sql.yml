@@ -17,12 +17,3 @@ detection:
    ipv4.hdr|content: '|06|'
    ipv4.hdr|offset: 9
 
-meta:
-  direction: out
-  # optional if any, any
-  source: 
-      adress: any
-      port: any
-  destination:
-      adress: any
-      port: any
