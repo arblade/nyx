@@ -10,7 +10,7 @@ A new generation network detection format inspired from Sigma.
 ## Why ?
 
 We are dealing with specific rules of different IPS/IDS, and we need to find a common basis to discharge analyst from the burden of knowing all the details of multiple IPS/IDS. A simple format, like Sigma, will allow all analysts to easily craft their own rules.
-We want this format to be extensive, as the network rules can be fine tuned to be more efficient following each IPS/IDS specificities.
+We want this format to be extensive, as the network rules can be fine tuned to be more efficient following each IPS/IDS specificity.
 
 ## Philosophy
 
