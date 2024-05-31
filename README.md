@@ -1,6 +1,10 @@
 # Nyx
-
 A new generation detection format inspired from Sigma.
+<p align="center">
+<img src="./logo.png" width="200" style="text-">
+</p>
+
+
 
 ## Why ?
 
