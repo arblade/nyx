@@ -80,7 +80,7 @@ Usefull for ips to take action (drop packet for example)
 
 ### Protocols
 
-A mapping of osi layers and protocols targetted, example here:
+A mapping of osi layers and protocols targeted, example here:
 
 ```yaml
 protocols:
@@ -90,7 +90,7 @@ protocols:
 
 ### Detection
 
-Fields values targetted, organised in selections which are handled with condition field.
+Fields values targeted, organised in selections which are handled with condition field.
 
 ```yml
 detection:
@@ -102,7 +102,7 @@ detection:
 
 ### Flow
 
-Network directions targetted
+Network directions targeted
 
 ```yaml
 flow:
