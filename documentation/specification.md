@@ -95,7 +95,9 @@ Fields values targeted, organised in selections which are handled with condition
 ```yml
 detection:
     selection:
-        tcp.flags: S,12
+        tcp.flags:
+            - S
+            - 12
         tcp.window: 55808
     condition: selection
 ```
