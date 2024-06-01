@@ -121,8 +121,8 @@ flow:
 
 ```yml
 title: Outdated Firefox on Windows
-description: Detects outdated Firefox browsers (version 3.x except 3.6.13) on Windows.
 id: 9000000
+description: Detects outdated Firefox browsers (version 3.x except 3.6.13) on Windows.
 level: high
 action: alert
 
