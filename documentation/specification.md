@@ -133,7 +133,6 @@ detection:
   selection:
     http.user_agent:
       - "Mozilla/5.0 (Windows;"
-    http.user_agent:
       - "Firefox/3."
   filter:
     http.user_agent:
