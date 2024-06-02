@@ -62,7 +62,7 @@ class NyxRuleDetectionField:
         self.is_not = is_not
 
     def convert(self):
-        field = f"{self.field};"
+        field = f"{self.field}"
 
         not_str = ""
         if self.is_not:  # adding not modifier
@@ -72,7 +72,7 @@ class NyxRuleDetectionField:
         if self.distance:
             modifiers.append(f"distance:{self.distance}")
 
-        return " ".join([field, content] + modifiers)
+        return "; ".join([field, content] + modifiers)
 
     @classmethod
     def from_dict(cls, field: dict):
@@ -96,7 +96,7 @@ class NyxRuleDetectionField:
                     field_name = key
 
                 field_value = value
-            elif key == "distance":
+            elif key == "dist":
                 distance = value
 
         return cls(
