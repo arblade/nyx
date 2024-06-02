@@ -1,0 +1,94 @@
+%YAML 1.1
+---
+# This is the Suricata configuration file.
+# It is a basic and minimal configuration file.
+
+# Logging settings
+logging:
+  default-log-level: info
+  outputs:
+    - console:
+        enabled: yes
+        type: fast
+
+# Network interface to listen on
+af-packet:
+  - interface: eth0
+    threads: 4
+    cluster-id: 99
+    cluster-type: cluster_flow
+    defrag: yes
+
+# Detection engine settings
+default-rule-path: /etc/suricata/rules
+rule-files:
+  - suricata.rules
+
+# Detection settings
+detect-engine:
+  - profile: medium
+    custom-values:
+      toclient-groups: 3
+      toserver-groups: 3
+    sgh-mpm-context: auto
+
+# AF_PACKET configuration for inline IPS mode
+af-packet:
+  - interface: eth0
+    threads: auto
+    cluster-id: 99
+    cluster-type: cluster_flow
+    defrag: yes
+    use-mmap: yes
+
+# Output settings
+outputs:
+  - fast:
+      enabled: yes
+      filename: /var/log/suricata/fast.log
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: /var/log/suricata/eve.json
+      types:
+        - alert:
+            payload: yes         # enable dumping payload in Base64
+            payload-printable: yes # enable dumping payload in printable (lossy) format
+            packet: yes          # enable dumping of packet (without stream segments)
+            metadata: yes        # enable inclusion of app layer metadata with alert
+            http:
+              extended: yes      # enable this for extended logging information for HTTP
+        - dns:
+            query: yes           # enable logging of DNS queries
+            answer: yes          # enable logging of DNS answers
+        - tls:
+            extended: yes        # enable this for extended logging information for TLS
+        - http:
+            extended: yes        # enable this for extended logging information for HTTP
+
+# Configure the number of detection threads
+cpu:
+  affinity:
+    - management-cpu-set:
+        cpu: [ 0 ]  # dedicated CPUs for management threads
+    - receive-cpu-set:
+        cpu: [ 1, 2 ]  # dedicated CPUs for receive threads
+    - worker-cpu-set:
+        cpu: [ "all" ]  # dedicated CPUs for worker threads
+
+# Misc settings
+unix-command:
+  enabled: yes
+  filename: /var/run/suricata-command.socket
+
+# Host-mode settings
+host-mode: auto
+
+# Capture settings
+pfring:
+  - interface: eth0
+
+# PCAP mode settings
+pcap:
+  - interface: eth0
+    buffer-size: 512mb
