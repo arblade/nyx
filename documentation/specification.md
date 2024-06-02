@@ -9,10 +9,8 @@ ref [optional]
 description
 id
 level
-action [optional]
-
-protocols
-  {osi_layer:protocol}
+action
+protocol 
 
 detection
   {selection_name}
@@ -78,14 +76,12 @@ Usefull for ips to take action (drop packet for example)
 - pass (usefull ?)
 
 
-### Protocols
+### Protocol
 
-A mapping of osi layers and protocols targeted, example here:
+The protocol targeted
 
 ```yaml
-protocols:
-    ip: tcp
-    application: http
+protocol: tcp
 ```
 
 ### Detection
@@ -125,9 +121,7 @@ id: 9000000
 description: Detects outdated Firefox browsers (version 3.x except 3.6.13) on Windows.
 level: high
 action: alert
-
-protocols:
-  application: http
+protocol: http
 
 detection:
   selection:
