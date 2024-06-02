@@ -213,7 +213,7 @@ class NyxRule:
         conv_detection = self.detection.convert()
         conv_flow = self.flow.convert()
 
-        return f'{conv_action} {conv_protocol} {conv_flow} msg("{conv_title}"); {conv_detection}; {conv_id} rev:1; metadata: description "{conv_description}"'
+        return f'{conv_action} {conv_protocol} {conv_flow} (msg:"{conv_title}"; {conv_detection}; {conv_id}; rev:1; metadata: description "{conv_description}";)'
 
     @classmethod
     def from_dict(cls, dict):
