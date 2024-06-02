@@ -20,4 +20,6 @@ We will first focus on suricata and snort formats.
 
 ## Get Started
 
-Watch our [format specification](./documentation/specification.md)
+Watch the [format specification](./documentation/specification.md)
+
+Go to the current issues i am struggling with on [current thinking](./thinking.md)

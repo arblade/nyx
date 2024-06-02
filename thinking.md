@@ -1,4 +1,4 @@
-## Current thinking about this format immplementation
+## Current thinking about format implementation
 
 There is a cursor concept in suricata, i need to implement the notion of order of matches, i cannot just say match pattern1 and pattern2 and not pattern3 all in discord, 
 i need to put an order.
