@@ -5,7 +5,8 @@ A new generation network detection format inspired from Sigma.
 <img src="./logo.png" width="200" style="text-">
 </p>
 
-> [!NOTE] This is an ongoing work (not yet alpha), there could be some incoherences between parts of the project
+> [!NOTE] 
+> This is an ongoing work (not yet alpha), there could be some incoherences between parts of the project
 
 ## Why ?
 
