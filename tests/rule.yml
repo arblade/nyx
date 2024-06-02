@@ -6,10 +6,13 @@ action: alert
 protocol: http
 
 detection:
-    - http.user_agent: "User-Agent|3A| Mozilla/5.0 |28|Windows|3B|"
-    - http.user_agent: "Firefox/3."
-      dist: 0
-    - http.user_agent|not: "Firefox/3.6.13"
-      dist: -10
+    ttl: 1 
+    http.user_agent: 
+      - content: "User-Agent|3A| Mozilla/5.0 |28|Windows|3B|"
+      - content: "Firefox/3."
+        dist: 0
+      - content|not: "Firefox/3.6.13"
+        dist: -10
+
 flow:
   direction: out

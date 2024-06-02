@@ -21,6 +21,7 @@ This one is bigger but more understandable.
 
 ```yml
 detection:
+    - ttl: 10 
     - http.user_agent: "User-Agent|3A| Mozilla/5.0 |28|Windows|3B|"
     - http.user_agent: "Firefox/3."
       dist: 0
@@ -35,6 +36,7 @@ Finally, this one is more compact but still clear
 
 ```yml
 detection:
+    ttl: 10 
     http.user_agent: 
       - content: "User-Agent|3A| Mozilla/5.0 |28|Windows|3B|"
       - content: "Firefox/3."
