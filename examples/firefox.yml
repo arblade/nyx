@@ -9,14 +9,11 @@ protocols:
 
 detection:
   selection:
-    http.user_agent:
-      - "Mozilla/5.0 (Windows;"
-    http.user_agent:
-      - "Firefox/3."
-  filter:
-    http.user_agent:
-      - "Firefox/3.6.13"
-  condition: selection and not filter
+    http.user_agent: "User-Agent|3A| Mozilla/5.0 |28|Windows|3B|"
+    http.user_agent|dist0: "Firefox/3."
+    http.user_agent|dist-10|not: "Firefox/3.6.13"
 
 flow:
   direction: out
+
+# alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"Outdated Firefox on Windows"; content:"User-Agent|3A| Mozilla/5.0 |28|Windows|3B| "; content:"Firefox/3."; distance:0; content:!"Firefox/3.6.13"; distance:-10; sid:9000000; rev:1;)
