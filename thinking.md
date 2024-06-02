@@ -28,3 +28,43 @@ detection:
       dist: -10
 
 ```
+
+Finally, this one is more compact but still clear
+
+> I assume there is always an AND operator playing between matches, i'm maybe mistaking
+
+```yml
+detection:
+    http.user_agent: 
+      - content: "User-Agent|3A| Mozilla/5.0 |28|Windows|3B|"
+      - content: "Firefox/3."
+        dist: 0
+      - content|not: "Firefox/3.6.13"
+        dist: -10
+
+```
+this one is minimalist but less clear
+```yml
+detection:
+    http.user_agent: 
+      - "User-Agent|3A| Mozilla/5.0 |28|Windows|3B|"
+      - "Firefox/3.":
+        dist: 0
+      - "!Firefox/3.6.13":
+        dist: -10
+
+```
+
+## Test of rules
+
+We have the same issue than in sigma, we need targeted logs to test rules.
+I like what hayabusa is cooking, maybe we can do the same
+
+Something like :
+
+```yml
+test:
+    http.user_agent: "User-Agent (Mozilla/5.0 ;Windows))"
+```
+
+which can be then played to confirm rule is working.
