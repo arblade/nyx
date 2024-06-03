@@ -25,7 +25,7 @@ Watch the [format specification](./documentation/specification.md)
 
 Go to the current issues i am struggling with on [current thinking](./thinking.md)
 
-## I want to try the lib !
+## Want a taste ?
 
 A baby script is available :
 
