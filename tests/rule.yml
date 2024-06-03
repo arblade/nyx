@@ -6,7 +6,7 @@ action: alert
 protocol: http
 
 detection:
-    ttl: 1 
+
     http.user_agent: 
       - content: "User-Agent|3A| Mozilla/5.0 |28|Windows|3B|"
       - content: "Firefox/3."

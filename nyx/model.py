@@ -1,6 +1,8 @@
 import re
 from typing import List, Optional
 
+from nyx.exceptions import FormatException
+
 
 class NyxRuleField:
     def __init__(self, content: str) -> None:
@@ -44,83 +46,127 @@ class NyxRuleAction(NyxRuleField):
         super().__init__(content)
 
 
-class NyxRuleDetectionField:
+class NyxRuleDetectionProtocolFieldValue:
     def __init__(
         self,
-        field: str,
-        value: dict,
-        distance=None,
-        within=None,
-        depth=None,
-        is_not=False,
+        content: str,
+        distance: int = None,
+        within: int = None,
+        depth: int = None,
+        is_not: bool = False,
     ) -> None:
-        self.field = field
-        self.value = value
+        self.content = content
         self.distance = distance
         self.within = within
         self.depth = depth
         self.is_not = is_not
 
     def convert(self):
-        field = f"{self.field}"
-
-        not_str = ""
-        if self.is_not:  # adding not modifier
-            not_str = "!"
-        content = f'content:"{not_str}{self.value}"'
-        modifiers = []
-        if self.distance:
-            modifiers.append(f"distance:{self.distance}")
-
-        return "; ".join([field, content] + modifiers)
+        all_elems = []
+        all_fields = ["distance", "within", "depth"]
+        for field in all_fields:
+            if self.__getattribute__(field):
+                all_elems.append(f"{field}:{self.__getattribute__(field)}")
+        is_not = ""
+        if self.is_not:
+            is_not = "!"
+        return f'content:"{is_not}{self.content}";' + " " + "; ".join(all_elems)
 
     @classmethod
-    def from_dict(cls, field: dict):
-        # as this is not ordered, we need to find the field
-        distance = None
-        is_not = None
-        within = None
-        depth = None
-        print(field)
-        print(field.items())
-        for key, value in field.items():
+    def from_dict(cls, field_value: dict):
+        base = cls(None)
+        for key, value in field_value.items():
             print(key)
-            if re.search("[a-z_\\|-]+\\.[a-z_\\|-]+", str(key)):
-                # this is it
-                if "|" in key:
-                    field_name = key.split("|")[0]
-                    modifier = key.split("|")[1]
-                    if modifier == "not":
-                        is_not = True
-                else:
-                    field_name = key
-
-                field_value = value
+            if key.split("|")[0] == "content":
+                if "|not" in key:
+                    base.is_not = True
+                base.content = value
             elif key == "dist":
-                distance = value
+                base.distance = value
+            elif key == "within":
+                base.within = value
+            elif key == "depth":
+                base.depth = value
+            elif key == "is_not":
+                base.is_not = value
+        return base
 
-        return cls(
-            field=field_name, value=field_value, distance=distance, is_not=is_not
-        )
+
+class NyxRuleDetectionProtocolField:
+    def __init__(
+        self, name: str, value: List[NyxRuleDetectionProtocolFieldValue]
+    ) -> None:
+        self.name = name
+        self.value = value
+
+    @classmethod
+    def from_dict(cls, field_name: str, field_value: dict):
+        # as this is not ordered, we need to find the field
+
+        if type(field_value) == str:
+            return cls(field_name=field_name, field_value=[field_value])
+        elif type(field_value) == list:
+            all_field_values = []
+            for value in field_value:
+                field_value = NyxRuleDetectionProtocolFieldValue.from_dict(value)
+                all_field_values.append(field_value)
+            return cls(name=field_name, value=all_field_values)
+        else:
+            raise FormatException(
+                f"{field_name} value is not a list or a str, please fix"
+            )
+
+    def convert(self):
+        return f"{self.name}; " + " ".join([a.convert() for a in self.value])
 
 
-class NyxRuleCondition:
-    def __init__(self, content) -> None:
-        self.content = content
+class NyxRuleDetectionClassicField:
+    def __init__(self, name: str, value: str) -> None:
+        self.name = name
+        self.value: str = value
+
+    def convert(self):
+        return f"{self.name}:{self.value}"
+
+    @classmethod
+    def from_dict(cls, field_name: str, field_value: dict):
+        # as this is not ordered, we need to find the field
+
+        return cls(name=field_name, value=field_value)
 
 
 class NyxRuleDetection:
-    def __init__(self, fields: List[NyxRuleDetectionField]) -> None:
+    def __init__(
+        self, fields: List[NyxRuleDetectionClassicField | NyxRuleDetectionProtocolField]
+    ) -> None:
         self.fields = fields
 
     def convert(self):
         return "; ".join([field.convert() for field in self.fields])
 
     @classmethod
-    def from_dict(cls, detections: list):
-        return NyxRuleDetection(
-            [NyxRuleDetectionField.from_dict(field) for field in detections]
-        )
+    def from_dict(cls, detections: dict):
+        all_fields = []
+        print(f"{detections=}")
+        for field_name, field_value in detections.items():
+            print(field_name)
+            if not re.search(
+                "[a-z_\\|-]+\\.[a-z_\\|-]+", str(field_name)
+            ):  # we here on a classic keyword
+                all_fields.append(
+                    NyxRuleDetectionClassicField.from_dict(
+                        field_name=field_name, field_value=field_value
+                    )
+                )
+            else:  # we are on a protocol field
+                print("passing here")
+                all_fields.append(
+                    NyxRuleDetectionProtocolField.from_dict(
+                        field_name=field_name, field_value=field_value
+                    )
+                )
+
+        return cls(all_fields)
 
 
 class NyxRuleProtocol:
