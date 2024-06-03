@@ -124,15 +124,12 @@ action: alert
 protocol: http
 
 detection:
-  selection:
-    http.user_agent:
-      - "Mozilla/5.0 (Windows;"
-      - "Firefox/3."
-  filter:
-    http.user_agent:
-      - "Firefox/3.6.13"
-  condition: selection and not filter
-
+    http.user_agent: 
+      - content: "User-Agent|3A| Mozilla/5.0 |28|Windows|3B|"
+      - content: "Firefox/3."
+        dist: 0
+      - content|not: "Firefox/3.6.13"
+        dist: -10
 flow:
   direction: out
 ```

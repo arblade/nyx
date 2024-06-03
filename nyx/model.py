@@ -76,7 +76,7 @@ class NyxRuleDetectionProtocolFieldValue:
     def from_dict(cls, field_value: dict):
         base = cls(None)
         for key, value in field_value.items():
-            print(key)
+
             if key.split("|")[0] == "content":
                 if "|not" in key:
                     base.is_not = True
@@ -147,9 +147,9 @@ class NyxRuleDetection:
     @classmethod
     def from_dict(cls, detections: dict):
         all_fields = []
-        print(f"{detections=}")
+
         for field_name, field_value in detections.items():
-            print(field_name)
+
             if not re.search(
                 "[a-z_\\|-]+\\.[a-z_\\|-]+", str(field_name)
             ):  # we here on a classic keyword
@@ -159,7 +159,7 @@ class NyxRuleDetection:
                     )
                 )
             else:  # we are on a protocol field
-                print("passing here")
+
                 all_fields.append(
                     NyxRuleDetectionProtocolField.from_dict(
                         field_name=field_name, field_value=field_value

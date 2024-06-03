@@ -26,6 +26,7 @@ def convert_from_dict(yaml_dict: dict):
 
 
 if __name__ == "__main__":
+
     rule_file = Path(__file__).parent.parent / "tests" / "rule.yml"
     parsed = parse_yaml(rule_file)
     print(parsed)

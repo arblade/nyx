@@ -24,3 +24,19 @@ We will first focus on suricata and snort formats.
 Watch the [format specification](./documentation/specification.md)
 
 Go to the current issues i am struggling with on [current thinking](./thinking.md)
+
+## I want to try the lib !
+
+A baby script is available :
+
+After cloning the project, just do :
+```bash
+python3.10 nyx/cli.py ./tests/rule.yml
+```
+You can check that the rule is suricata validated by copying your rule to a file and running :
+
+```bash
+./scripts/test_alert_suricata.sh ./tests/test.rules # replace here your file with your rule
+```
+
+
