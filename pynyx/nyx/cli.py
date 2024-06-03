@@ -26,17 +26,17 @@ def convert_from_dict(yaml_dict: dict):
     return NyxRule.from_dict(yaml_dict)
 
 
-if __name__ == "__main__":
-
+def main():
     parser = argparse.ArgumentParser(description="Print the given file path.")
     parser.add_argument("file_path", type=str, help="The path of the rules file")
-
     args = parser.parse_args()
     rule_file = args.file_path
-
-    rule_file = Path(__file__).parent.parent / "tests" / "rule.yml"
     parsed = parse_yaml(rule_file)
     check_keys(parsed)
 
     rule = convert_from_dict(parsed)
     print(rule.convert())
+
+
+if __name__ == "__main__":
+    main()

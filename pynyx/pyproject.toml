@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "pyNyx"
+version = "0.0.4"
+description = "nyx rules processing and conversion tools"
+authors = ["arblade <raphael.arblade@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [
+    { include = "nyx" }
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pyyaml = "^6.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.scripts]
+nyx = "nyx.cli:main"

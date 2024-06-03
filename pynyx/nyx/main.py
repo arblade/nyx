@@ -2,7 +2,7 @@ from pathlib import Path
 import yaml
 import sys
 
-sys.path.append(str(Path(__file__).parent.parent.resolve()))
+# sys.path.append(str(Path(__file__).parent.parent.resolve()))
 
 from nyx.model import NyxRule
 from nyx.exceptions import FormatException
