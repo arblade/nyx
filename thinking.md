@@ -70,3 +70,22 @@ test:
 ```
 
 which can be then played to confirm rule is working.
+
+## Mutliple matches in a flow
+
+I just saw that flowbits serve to make a rule match when a previous packet match inside a flow (a flow is a group of packets matched by same protocl client port/ip and server port/ip)
+
+```ru
+alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"ET EXPLOIT VNC Possible Vulnerable Server Response"; flow:established; dsize:12; content:"RFB 003.00"; depth:11; flowbits:noalert; flowbits:set,BSposs.vuln.vnc.svr; reference:url,www.realvnc.com/docs/rfbproto.pdf; reference:cve,2006-2369; classtype:misc-activity; sid:2002912; rev:7; metadata:created_at 2010_07_30, updated_at 2019_07_26;)
+
+```
+```ru
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg:"ET EXPLOIT VNC Client response"; flowbits:isset,BSposs.vuln.vnc.svr; flow:established; dsize:12; content:"RFB 003.0"; depth:9; flowbits:noalert; flowbits:set,BSis.vnc.setup; reference:url,www.realvnc.com/docs/rfbproto.pdf; classtype:misc-activity; sid:2002913; rev:7; metadata:created_at 2010_07_30, updated_at 2019_07_26;)
+
+```
+
+Our format has to take this into account in some way, like a correlation rule in sigma.
+
+## Classtype use for level ?
+
+CLasstype is used for setting priority to alerts, which is exactly what the sigma level thing is made for, so I think about setting classtype as level 

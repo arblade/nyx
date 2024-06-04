@@ -33,12 +33,23 @@ class NyxRuleId(NyxRuleField):
         return f"sid:{self.content}"
 
 
+class NyxRuleReferences:
+
+    def __init__(self, references: List[str]) -> None:
+        if type(references) == str:
+            references = [references]
+        self.references = references
+
+    def convert(self):
+        return " ".join([f"reference:url,{ref}" for ref in self.references])
+
+
 class NyxRuleLevel(NyxRuleField):
     def __init__(self, content: str) -> None:
         super().__init__(content)
 
     def convert(self):
-        return f"level {self.content}"
+        return f"classtype:{self.content}"
 
 
 class NyxRuleAction(NyxRuleField):
@@ -47,6 +58,20 @@ class NyxRuleAction(NyxRuleField):
 
 
 class NyxRuleDetectionProtocolFieldValue:
+    KEYWORDS = [
+        "dist",
+        "within",
+        "depth",
+        "offset",
+        "pcre",
+        "rawbytes",
+        "isdataat",
+        "bsize",
+        "dsize",
+        "fast",
+    ]
+    KEYWORDS_MAPPING = {"dist": "distance", "fast": "fast_pattern"}
+
     def __init__(
         self,
         content: str,
@@ -54,23 +79,29 @@ class NyxRuleDetectionProtocolFieldValue:
         within: int = None,
         depth: int = None,
         is_not: bool = False,
+        no_case: bool = False,
     ) -> None:
         self.content = content
-        self.distance = distance
-        self.within = within
-        self.depth = depth
+        self.keywords = {}
         self.is_not = is_not
+        self.no_case = no_case
 
     def convert(self):
         all_elems = []
-        all_fields = ["distance", "within", "depth"]
-        for field in all_fields:
-            if self.__getattribute__(field):
-                all_elems.append(f"{field}:{self.__getattribute__(field)}")
+
+        for keyword, value in self.keywords.items():
+            if keyword in type(self).KEYWORDS_MAPPING.keys():
+                keyword = type(self).KEYWORDS_MAPPING[keyword]
+            all_elems.append(f"{keyword}:{value}")
         is_not = ""
         if self.is_not:
             is_not = "!"
-        return f'content:"{is_not}{self.content}";' + " " + "; ".join(all_elems)
+        no_case = ""
+        if self.no_case:
+            no_case = "nocase;"
+        return (
+            f'content:"{is_not}{self.content}"; {no_case}' + " " + "; ".join(all_elems)
+        )
 
     @classmethod
     def from_dict(cls, field_value: dict):
@@ -80,44 +111,112 @@ class NyxRuleDetectionProtocolFieldValue:
             if key.split("|")[0] == "content":
                 if "|not" in key:
                     base.is_not = True
+                if "|nocase" in key:
+                    base.no_case = True
                 base.content = value
-            elif key == "dist":
-                base.distance = value
-            elif key == "within":
-                base.within = value
-            elif key == "depth":
-                base.depth = value
-            elif key == "is_not":
-                base.is_not = value
+            elif key in cls.KEYWORDS:
+                base.keywords[key] = value
         return base
 
 
+class NyxRuleDetectionProtcolTransformer:
+    TRANSFORMERS = [
+        "nospace",
+        "dotprefix",
+        "lower",
+        "lowerheader",
+        "upper",
+        "md5",
+        "sha1",
+        "sha256",
+        "urldecode",
+    ]
+    COMPLEX_TRASNFORMERS = ["xor", "pcrexform"]
+    TRANSFORMERS_MAPPING = {
+        "nospace": "strip_whitespace",
+        "lower": "to_lower",
+        "upper": "to_upper",
+        "lowerheader": "header_lowercase",
+        "md5": "to_md5",
+        "sha1": "to_sha1",
+        "sha256": "to_sha256",
+        "urldecode": "url_decode",
+    }
+
+    def __init__(self, key: str, value: str) -> None:
+        self.value = value
+        self.key = key
+
+    def convert(self):
+        if self.key in type(self).TRANSFORMERS_MAPPING.keys():
+            key = type(self).TRANSFORMERS_MAPPING[self.key]
+        else:
+            key = self.key
+        if self.value != None:
+            return f'{key}:"{self.value}";'
+        else:
+            return f"{key};"
+
+
 class NyxRuleDetectionProtocolField:
+
     def __init__(
-        self, name: str, value: List[NyxRuleDetectionProtocolFieldValue]
+        self,
+        name: str,
+        transformers: List[NyxRuleDetectionProtcolTransformer],
+        value: List[NyxRuleDetectionProtocolFieldValue],
     ) -> None:
+
         self.name = name
+
+        self.transformers = transformers
         self.value = value
 
     @classmethod
     def from_dict(cls, field_name: str, field_value: dict):
         # as this is not ordered, we need to find the field
+        transformers = []
+        if "|" in field_name:
+            parts = field_name.split("|")
+            field_name = parts[0]
+            transformers = [
+                NyxRuleDetectionProtcolTransformer(key=tr, value=None)
+                for tr in parts[1:]
+            ]
 
         if type(field_value) == str:
             return cls(field_name=field_name, field_value=[field_value])
         elif type(field_value) == list:
             all_field_values = []
             for value in field_value:
-                field_value = NyxRuleDetectionProtocolFieldValue.from_dict(value)
-                all_field_values.append(field_value)
-            return cls(name=field_name, value=all_field_values)
+                print(type(value))
+                if "content" in value.keys() or "pcre" in value.keys():
+                    field_value = NyxRuleDetectionProtocolFieldValue.from_dict(value)
+                    all_field_values.append(field_value)
+                elif (
+                    list(value.keys())[0]
+                    in NyxRuleDetectionProtcolTransformer.COMPLEX_TRASNFORMERS
+                ):
+                    transformers.append(
+                        NyxRuleDetectionProtcolTransformer(
+                            key=list(value.keys())[0], value=list(value.values())[0]
+                        )
+                    )
+
+            return cls(
+                name=field_name, transformers=transformers, value=all_field_values
+            )
         else:
             raise FormatException(
                 f"{field_name} value is not a list or a str, please fix"
             )
 
     def convert(self):
-        return f"{self.name}; " + " ".join([a.convert() for a in self.value])
+
+        return (
+            f"{self.name}; {' '.join([f'{tr.convert()}' for tr in self.transformers])} "
+            + " ".join([a.convert() for a in self.value])
+        )
 
 
 class NyxRuleDetectionClassicField:
@@ -193,16 +292,28 @@ class NyxRuleEndpoint:
         return NyxRuleEndpoint(address=address, source=source)
 
 
-class NyxRuleFlow:
+class NyxRuleStreamFlow:
+    def __init__(self, options: List[str]) -> None:
+        if type(options) == str:
+            options = [options]
+        self.options = options
+
+    def convert(self):
+        return f"flow:{','.join(self.options)};"
+
+
+class NyxRuleStream:
     def __init__(
         self,
         direction: str,
+        flow: NyxRuleStreamFlow,
         source: Optional[NyxRuleEndpoint] = None,
         destination: Optional[NyxRuleEndpoint] = None,
     ) -> None:
         self.direction = direction
         self.source = source
         self.destination = destination
+        self.flow = flow
 
     def convert(self):
         res = ""
@@ -217,15 +328,22 @@ class NyxRuleFlow:
         return " -> ".join([source_str, destination_str])
 
     @classmethod
-    def from_dict(self, flow: dict):
+    def from_dict(self, stream: dict):
         source = None
         destination = None
-        direction = flow["direction"]
-        if "source" in flow.keys():
-            source = NyxRuleEndpoint.from_dict(flow["source"])
-        if "destination" in flow.keys():
-            destination = NyxRuleEndpoint.from_dict(flow["destination"])
-        return NyxRuleFlow(direction=direction, source=source, destination=destination)
+        direction = stream["direction"]
+        if "source" in stream.keys():
+            source = NyxRuleEndpoint.from_dict(stream["source"])
+        if "destination" in stream.keys():
+            destination = NyxRuleEndpoint.from_dict(stream["destination"])
+        if "flow" in stream.keys():
+            flow = NyxRuleStreamFlow(stream["flow"])
+        return NyxRuleStream(
+            direction=direction,
+            source=source,
+            flow=flow,
+            destination=destination,
+        )
 
 
 class NyxRule:
@@ -234,32 +352,35 @@ class NyxRule:
         title: NyxRuleTitle,
         id: NyxRuleId,
         description: NyxRuleDescription,
+        references: NyxRuleReferences,
         level: NyxRuleLevel,
         action: NyxRuleAction,
         protocol: NyxRuleProtocol,
-        flow: NyxRuleFlow,
+        stream: NyxRuleStream,
         detection: NyxRuleDetection,
     ) -> None:
         self.title = title
         self.id = id
         self.description = description
+        self.reference = references
         self.level = level
         self.protocol = protocol
         self.action = action
         self.detection = detection
-        self.flow = flow
+        self.stream = stream
 
     def convert(self):
         conv_title = self.title.convert()
         conv_id = self.id.convert()
         conv_protocol = self.protocol.convert()
         conv_description = self.description.convert()
+        conv_references = self.reference.convert()
         conv_level = self.level.convert()
         conv_action = self.action.convert()
         conv_detection = self.detection.convert()
-        conv_flow = self.flow.convert()
-
-        return f'{conv_action} {conv_protocol} {conv_flow} (msg:"{conv_title}"; {conv_detection}; {conv_id}; rev:1; metadata: description "{conv_description}";)'
+        conv_stream = self.stream.convert()
+        conv_flow = self.stream.flow.convert()
+        return f'{conv_action} {conv_protocol} {conv_stream} (msg:"{conv_title}"; {conv_flow} {conv_detection}; {conv_references}; {conv_level}; {conv_id}; rev:1; metadata: description "{conv_description}";)'
 
     @classmethod
     def from_dict(cls, dict):
@@ -267,17 +388,19 @@ class NyxRule:
         description = NyxRuleDescription(dict["description"])
         id = NyxRuleId(dict["id"])
         level = NyxRuleLevel(dict["level"])
+        references = NyxRuleReferences(dict["references"])
         action = NyxRuleAction(dict["action"])
         protocol = NyxRuleProtocol(dict["protocol"])
         detection = NyxRuleDetection.from_dict(dict["detection"])
-        flow = NyxRuleFlow.from_dict(dict["flow"])
+        stream = NyxRuleStream.from_dict(dict["stream"])
         return NyxRule(
             title=title,
             description=description,
             id=id,
+            references=references,
             level=level,
             action=action,
             protocol=protocol,
             detection=detection,
-            flow=flow,
+            stream=stream,
         )

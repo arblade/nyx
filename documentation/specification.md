@@ -13,12 +13,12 @@ action
 protocol 
 
 detection
-  {selection_name}
-    {field:value}
-  condition
-
-flow [optional]
-  direction
+    {keyword_field:value} [optional]
+    protocol_field [optional]
+      {key:value}
+stream [optional]
+  direction [optional]
+  flow [optional]
   # optional if any, any
   source [optional]
       {adress:value} [optional]
@@ -90,12 +90,12 @@ Fields values targeted, organised in selections which are handled with condition
 
 ```yml
 detection:
-    selection:
-        tcp.flags:
-            - S
-            - 12
-        tcp.window: 55808
-    condition: selection
+    http.user_agent: 
+      - content: "User-Agent|3A| Mozilla/5.0 |28|Windows|3B|"
+      - content: "Firefox/3."
+        dist: 0
+      - content|not: "Firefox/3.6.13"
+        dist: -10
 ```
 
 ### Flow
@@ -103,7 +103,8 @@ detection:
 Network directions targeted
 
 ```yaml
-flow:
+stream:
+  flow: to_client
   direction: out
   source: 
       address: $EXTERNAL_NET
@@ -130,6 +131,7 @@ detection:
         dist: 0
       - content|not: "Firefox/3.6.13"
         dist: -10
-flow:
+stream:
   direction: out
+  flow: from_client
 ```
