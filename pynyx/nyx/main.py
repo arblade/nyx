@@ -25,6 +25,14 @@ def convert_from_dict(yaml_dict: dict):
     return NyxRule.from_dict(yaml_dict)
 
 
+def convert_from_yaml(raw_yaml: str):
+    """convert from nyx raw yaml to suricata"""
+    yaml_dict = yaml.safe_load(raw_yaml)
+    check_keys(yaml_dict)
+    rule = NyxRule.from_dict(yaml_dict)
+    return rule.convert()
+
+
 if __name__ == "__main__":
 
     rule_file = Path(__file__).parent.parent / "tests" / "rule.yml"
