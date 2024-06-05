@@ -5,7 +5,7 @@ A new generation network detection format inspired from Sigma.
 <img src="./logo.png" width="200" style="text-">
 </p>
 
-Test the format here [nyx.alpinedev.fr](https://nyx.alpinedev.fr)
+You can test the format here [nyx.alpinedev.fr](https://nyx.alpinedev.fr)
 
 > [!NOTE] 
 > This is an ongoing work (not yet alpha), there could be some incoherences between parts of the project
@@ -29,7 +29,9 @@ Go to the current issues i am struggling with on [current thinking](./thinking.m
 
 ## Want a taste ?
 
-A baby script is available :
+I deployed a web app to test the format here [nyx.alpinedev.fr](https://nyx.alpinedev.fr).
+
+A baby script is also available on pypi :
 
 ```bash
 pip install pynyx
