@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "erebe"
+version = "0.0.1"
+description = "a backend for nyx convertor Erebe"
+authors = ["arblade <raphael.arblade@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.111.0"
+pynyx = "^0.0.8"
+gunicorn = "^22.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
