@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyNyx"
-version = "0.0.8"
+version = "0.0.10"
 description = "nyx rules processing and conversion tools"
 authors = ["arblade <raphael.arblade@gmail.com>"]
 license = "MIT"

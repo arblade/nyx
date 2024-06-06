@@ -611,13 +611,13 @@ windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "pynyx"
-version = "0.0.8"
+version = "0.0.10"
 description = "nyx rules processing and conversion tools"
 optional = false
 python-versions = "<4.0,>=3.10"
 files = [
-    {file = "pynyx-0.0.8-py3-none-any.whl", hash = "sha256:4d199896aa02ddd92f65ace9443402b57d41adf499f6c32fe40d95a0d2ddc531"},
-    {file = "pynyx-0.0.8.tar.gz", hash = "sha256:797508311abb5d0516fcad12ce8716ba6fd18efa9185edf1d2d0d87d4d0fd563"},
+    {file = "pynyx-0.0.10-py3-none-any.whl", hash = "sha256:e25b9e6cf2ec94606228aec46271fd92aac26994a74325e7ba1ef5bb894f07d8"},
+    {file = "pynyx-0.0.10.tar.gz", hash = "sha256:9a72f3aac9371f2b311a7fc9107e1110bd76e791da0aafdf437cc50f04e02012"},
 ]
 
 [package.dependencies]
@@ -1124,4 +1124,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "45e23f9e17b1c97e883a00941b34773b7cf4be60d878cf82b18cfec4654100ad"
+content-hash = "84f0544803dac316fd57880096d0538a6041b15585cd77d121e1e20543581781"

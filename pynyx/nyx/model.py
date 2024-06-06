@@ -97,11 +97,12 @@ class NyxRuleDetectionProtocolFieldValue:
         if self.is_not:
             is_not = "!"
         no_case = ""
+        all_elems_str = ""
         if self.no_case:
             no_case = "nocase;"
-        return (
-            f'content:"{is_not}{self.content}"; {no_case}' + " " + "; ".join(all_elems)
-        )
+        if len(all_elems) > 0:
+            all_elems_str = "; ".join(all_elems) + ";"
+        return f'content:"{is_not}{self.content}"; {no_case}' + " " + all_elems_str
 
     @classmethod
     def from_dict(cls, field_value: dict):
@@ -383,7 +384,7 @@ class NyxRule:
         conv_detection = self.detection.convert()
         conv_stream = self.stream.convert()
         conv_flow = self.stream.flow.convert()
-        return f'{conv_action} {conv_protocol} {conv_stream} (msg:"{conv_title}"; {conv_flow} {conv_detection}; {conv_references}; {conv_level}; {conv_id}; rev:1; metadata: description "{conv_description}";)'
+        return f'{conv_action} {conv_protocol} {conv_stream} (msg:"{conv_title}"; {conv_flow} {conv_detection} {conv_references}; {conv_level}; {conv_id}; rev:1; metadata: description "{conv_description}";)'
 
     @classmethod
     def from_dict(cls, dict):
