@@ -16,6 +16,8 @@ module.exports = {
         "2xl": "1400px",
       },
     },
+
+   
     extend: {
       colors: {
         border: "hsl(var(--border))",
@@ -56,6 +58,9 @@ module.exports = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      fontFamily: {
+        inter: ["Inter", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {

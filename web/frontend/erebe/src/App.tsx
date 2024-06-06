@@ -3,6 +3,7 @@ import { MyEditor } from "./Editor";
 import { Button } from "@/components/ui/button";
 
 import "./App.css";
+import { CheckCircleIcon, CircleX } from "lucide-react";
 
 function App() {
   const [rawRule, setRawRule] = useState(
@@ -28,7 +29,7 @@ stream:\n\
   direction: out'
   );
   const [converted, setConverted] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null | undefined>(undefined);
   const sendRule = () =>
     fetch("/api/convert", {
       method: "POST",
@@ -61,12 +62,12 @@ stream:\n\
       });
   return (
     <>
-      <div className="font-bold text-2xl mb-8 text-zinc-700 w-full text-center">
+      <div className="font-extrabold text-orange-600 text-2xl font-inter mb-10 w-full text-center">
         Nyx Convertor
       </div>
       <div className="flex items-center justify-start flex-col">
         {" "}
-        <div className="w-1/2">
+        <div className="w-1/2 ">
           <MyEditor
             text={rawRule}
             readonly={false}
@@ -76,19 +77,31 @@ stream:\n\
           />
         </div>
         <div>
-          <Button variant="outline" onClick={sendRule}>
+          <Button className="font-inter" onClick={sendRule}>
             Submit
           </Button>
         </div>
         {converted && (
-          <div className="w-1/2 bg-zinc-100 p-4 px-6 my-4 rounded-lg font-mono text-zinc-800">
+          <div className="w-1/2 bg-gray-100  border-0 p-4 px-6 my-4 rounded-lg font-mono text-zinc-800">
             {converted}
           </div>
         )}
         {error ? (
-          <div className="w-1/2 text-red-600">{error}</div>
+          <div className="w-1/2 text-red-600 text-center flex items-center justify-center space-x-2">
+            <CircleX size={18} />
+            <div>{error}</div>
+          </div>
         ) : (
-          <div className="text-green-600">we're good !</div>
+          <div>
+            {error === null && (
+              <div className="text-green-600 font-inter flex space-x-2 items-center justify-center">
+                <CheckCircleIcon size={18} />
+                <div>
+                  nice, this rule has been converted and is suricata validated.
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
     </>

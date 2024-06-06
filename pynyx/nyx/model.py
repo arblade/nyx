@@ -189,8 +189,11 @@ class NyxRuleDetectionProtocolField:
         elif type(field_value) == list:
             all_field_values = []
             for value in field_value:
-                print(type(value))
-                if "content" in value.keys() or "pcre" in value.keys():
+                print(value)
+                if (
+                    "content" in [a.split("|")[0] for a in value.keys()]
+                    or "pcre" in value.keys()
+                ):
                     field_value = NyxRuleDetectionProtocolFieldValue.from_dict(value)
                     all_field_values.append(field_value)
                 elif (
